@@ -2,7 +2,7 @@
 # @Date:   2019-01-31T01:29:47+05:30
 # @Email:  atulsahay01@gmail.com
 # @Last modified by:   atul
-# @Last modified time: 2019-01-31T02:56:17+05:30
+# @Last modified time: 2019-01-31T03:30:40+05:30
 
 
 
@@ -82,3 +82,34 @@ second-- Need to extract top 10000 features from the gigantic matrix created by 
          tfidfvectorization
 third--- by the selected features learn SVC through it, lasso regularization is used
          for better performance"""
+
+pipeline = Pipeline([('vect', TfidfVectorizer(ngram_range = (1,2), stop_words=\
+                            "english", sublinear_tf = True)), \
+                     ('chi', SelectKBest(chi2, k=10000)), \
+                     ('clf', LinearSVC(C=1.0, penalty='l1', max_iter = 3000, \
+                            dual=False))])
+model = pipeline.fit(X_train,y_train)
+
+# To extract top fetaures for each class
+# its just for the visualization
+
+# Need to search more about it
+vectorizer = model.named_steps['vect']
+chi = model.named_steps['chi']
+clf = model.named_steps['clf']
+#------------------------------
+
+feature_names = vectorizer.get_feature_names()
+feature_names = [ feature_names[i] for i in chi.get_support(indices=True)]
+feature_names = np.asarray(feature_names)
+print(feature_names[:10])
+
+#Top 10 features or the keywords
+target_names = [ str(i) for i in range(15)]
+print("top 10 keywords per class")
+for i, label in enumerate(target_names):
+    top10 = np.argsort(clf.coef_[i])[-10:]
+    print(" %s : %s "%(label," ".join(feature_names[top10])))
+
+print("accuracy score: "+str(model.score(X_test,y_test)))
+print(model.predict(["These machine screw nuts are designed to be used with smaller machine screws (under 1/4 in.) and have a hex drive. Used for fastening to a screw when mechanically joining materials together. Must be used with like materials/sized screws. Available in various materials and finishes to suit your application.California residents: see&nbsp"]))
