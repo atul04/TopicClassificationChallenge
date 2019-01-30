@@ -2,7 +2,7 @@
 # @Date:   2019-01-31T01:29:47+05:30
 # @Email:  atulsahay01@gmail.com
 # @Last modified by:   atul
-# @Last modified time: 2019-01-31T03:30:40+05:30
+# @Last modified time: 2019-01-31T04:45:03+05:30
 
 
 
@@ -41,11 +41,11 @@ test_labels = test_labels.drop_duplicates(subset =['id'],\
 print(test_labels.head(10))
 
 #To get the total class labels
-labels =  list(test_labels['label'].unique())
-print(labels)
+class_labels =  list(test_labels['label'].unique())
+print(class_labels)
 
 #To get map out of the list
-labels = { k : v for v, k in enumerate(labels) }
+labels = { k : v for v, k in enumerate(class_labels) }
 print(labels)
 
 #To change the strings with the mappings
@@ -113,3 +113,22 @@ for i, label in enumerate(target_names):
 
 print("accuracy score: "+str(model.score(X_test,y_test)))
 print(model.predict(["These machine screw nuts are designed to be used with smaller machine screws (under 1/4 in.) and have a hex drive. Used for fastening to a screw when mechanically joining materials together. Must be used with like materials/sized screws. Available in various materials and finishes to suit your application.California residents: see&nbsp"]))
+
+
+# Now to load test data set and get the final readings
+Test_Set = pd.read_csv("data/test_data.csv")
+Test_labels = model.predict(Test_Set['text'])
+print(Test_labels[:10])
+
+mapping = { k: v for k,v in enumerate(class_labels) }
+print(mapping)
+
+submission_data = pd.read_csv("data/sample_submission.csv")
+print(submission_data.head(10))
+
+for i in range(len(Test_labels)):
+    submission_data.at[i,mapping[Test_labels[i]]] = 1
+
+print(submission_data.head(10))
+
+submission_data.to_csv("FinalSubmission.csv", encoding='utf-8', index=False)
